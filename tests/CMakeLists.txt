@@ -17,7 +17,7 @@ macro(package_add_test TESTNAME)
 endmacro()
 
 package_add_test(test_reflectable test_reflectable.cpp)
-
+package_add_test(test_json_serializer test_json_serializer.cpp)
 
 add_custom_command(
     TARGET test_reflectable
