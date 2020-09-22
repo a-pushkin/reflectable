@@ -8,12 +8,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(JSON_BuildTests OFF CACHE BOOL "Don't build tests" FORCE)
+add_subdirectory(extern/json)
+
 
 add_library(reflectable
     src/Reflectable.cpp
 )
 include_directories(reflectable
     include
+    extern/json/include
+)
+
+target_link_libraries(reflectable
+    nlohmann_json
 )
 
 if(REFLECTABLE_BUILD_TESTS)
