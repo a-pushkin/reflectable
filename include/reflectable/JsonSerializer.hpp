@@ -554,8 +554,7 @@ class JsonSerializer {
 
     for (auto j = source.begin(); j != source.end(); ++j) {
       if (long_dispatch.find_string(j.key())) {
-        if (!Impl::ignore_required(required.handle(long_dispatch.handler(),
-                                                   reflectable, j.value()))) {
+        if (!required.handle(long_dispatch.handler(), reflectable, j.value())) {
           return false;
         }
       }

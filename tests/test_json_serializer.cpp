@@ -18,11 +18,23 @@ struct TwoMember : public Reflectable<TwoMember> {
 
 TEST(JsonSerializer, load_from_empty) {
   TwoMember config;
-  json empty{};
+  json empty = json::object();
 
   ASSERT_TRUE(JsonSerializer::load(empty, config));
 
   EXPECT_EQ(config.foo, TwoMember::default_foo);
+  EXPECT_EQ(config.bar, TwoMember::default_bar);
+}
+
+TEST(JsonSerializer, load_from_partial) {
+  TwoMember config;
+  json partial = json::object();
+  constexpr int test_foo = 1;
+  partial["foo"] = test_foo;
+
+  ASSERT_TRUE(JsonSerializer::load(partial, config));
+
+  EXPECT_EQ(config.foo, test_foo);
   EXPECT_EQ(config.bar, TwoMember::default_bar);
 }
 
