@@ -1,0 +1,21 @@
+name: Build Status
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: 'Run CMake with Ninja'
+        uses: lukka/run-cmake@v3
+        with:
+          buildDirectory: '${{ runner.workspace }}/build/'
+          cmakeAppendedArgs: '-GNinja '
+
