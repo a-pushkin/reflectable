@@ -123,7 +123,7 @@ class JsonSerializer {
    */
   template <typename T, typename TBase>
   static bool load_impl(const json& j, Reflectable<T, TBase>& member) {
-    return load(j, member);
+    return load(j, static_cast<T&>(member));
   }
 
   /**
@@ -132,7 +132,9 @@ class JsonSerializer {
   template <typename T>
   static bool save_impl(json& j, const std::optional<T>& member) {
     if (member.has_value()) {
-      RETURN_RESULT_IF_FAIL(save_impl(j, member.value()));
+      if (!save_impl(j, member.value())) {
+        return false;
+      }
     } else {
       j = json(nullptr);
     }
@@ -152,7 +154,9 @@ class JsonSerializer {
       return true;
     } else {
       T val;
-      RETURN_RESULT_IF_FAIL(load_impl(j, val));
+      if (!load_impl(j, val)) {
+        return false;
+      }
       member = val;
       return true;
     }
@@ -222,7 +226,9 @@ class JsonSerializer {
     j = json(member.size(), nullptr);
     size_t i = 0;
     for (const auto& el : member) {
-      RETURN_RESULT_IF_FAIL(save_impl(j[i++], el));
+      if (!save_impl(j[i++], el)) {
+        return false;
+      }
     }
 
     return true;
@@ -293,8 +299,9 @@ class JsonSerializer {
     size_t i = 0;
     for (const auto& el : member) {
       auto& jj = j[i++] = json(2, nullptr);
-      RETURN_RESULT_IF_FAIL(save_impl(jj[0], el.first));
-      RETURN_RESULT_IF_FAIL(save_impl(jj[1], el.second));
+      if (!save_impl(jj[0], el.first) || !save_impl(jj[1], el.second)) {
+        return false;
+      }
     }
 
     return true;
@@ -324,8 +331,9 @@ class JsonSerializer {
       typename T::key_type key;
       typename T::mapped_type value;
 
-      RETURN_RESULT_IF_FAIL(load_impl(jj[0], key));
-      RETURN_RESULT_IF_FAIL(load_impl(jj[1], value));
+      if (!load_impl(jj[0], key) || !load_impl(jj[1], value)) {
+        return false;
+      }
 
       member.emplace(key, value);
     }
@@ -382,8 +390,9 @@ class JsonSerializer {
   static bool save_impl(json& j, const std::pair<T1, T2>& member) {
     j = json(2, nullptr);
 
-    RETURN_RESULT_IF_FAIL(save_impl(j[0], member.first));
-    RETURN_RESULT_IF_FAIL(save_impl(j[1], member.second));
+    if (!save_impl(j[0], member.first) || !save_impl(j[1], member.second)) {
+      return false;
+    }
 
     return true;
   }
@@ -397,8 +406,9 @@ class JsonSerializer {
       return false;
     }
 
-    RETURN_RESULT_IF_FAIL(load_impl(j[0], member.first));
-    RETURN_RESULT_IF_FAIL(load_impl(j[1], member.second));
+    if (!load_impl(j[0], member.first) || !load_impl(j[1], member.second)) {
+      return false;
+    }
 
     return true;
   }

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <map>
 #include "reflectable/JsonSerializer.hpp"
 
 using namespace ReflectLib;
@@ -13,6 +14,7 @@ struct TwoMember : public Reflectable<TwoMember> {
   BEGIN_REFLECTABLE_MEMBERS()
   REFLECTABLE_MEMBER(int, foo, default_foo)
   REFLECTABLE_MEMBER(float, bar, default_bar)
+  REFLECTABLE_MEMBER((std::map<int, float>), baz)
   END_REFLECTABLE_MEMBERS()
 };
 
@@ -36,6 +38,25 @@ TEST(JsonSerializer, load_from_partial) {
 
   EXPECT_EQ(config.foo, test_foo);
   EXPECT_EQ(config.bar, TwoMember::default_bar);
+}
+
+struct Nested : public Reflectable<Nested> {
+  BEGIN_REFLECTABLE_MEMBERS()
+  REFLECTABLE_MEMBER(TwoMember, nested)
+  END_REFLECTABLE_MEMBERS()
+};
+
+TEST(JsonSerializer, load_nested) {
+  Nested config;
+  json partial = json::object();
+
+  constexpr int test_foo = 1;
+  partial["nested"]["foo"] = test_foo;
+
+  ASSERT_TRUE(JsonSerializer::load(partial, config));
+
+  EXPECT_EQ(config.nested.foo, test_foo);
+  EXPECT_EQ(config.nested.bar, TwoMember::default_bar);
 }
 
 }  // namespace
