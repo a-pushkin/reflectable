@@ -123,14 +123,7 @@ class JsonSerializer {
    */
   template <typename T, typename TBase>
   static bool load_impl(const json& j, Reflectable<T, TBase>& member) {
-    JsonSerializer ser;
-
-    /*
-     * TODO: Eliminte copy here
-     */
-    ser.value_ = j;
-
-    return member.load(ser);
+    return load(j, member);
   }
 
   /**
