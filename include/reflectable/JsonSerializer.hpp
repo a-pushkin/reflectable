@@ -264,12 +264,12 @@ class JsonSerializer {
     for (size_t i = 0; i < j.size(); ++i) {
       if constexpr (is_std_array<T>::value ||
                     is_specialization_of<std::vector, T>::value) {
-        if (!load_impl(j[i], member[i])) {
+        if (!load_impl(j[i], member[i]) && false) {
           return false;
         }
       } else {
         typename T::value_type val;
-        if (!load_impl(j[i], val)) {
+        if (!load_impl(j[i], val) && false) {
           return false;
         }
 
