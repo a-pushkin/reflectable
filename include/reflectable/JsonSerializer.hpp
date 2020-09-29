@@ -563,7 +563,7 @@ class JsonSerializer {
       }
     }
 
-    return required.check();
+    return true;
   }
 
  public:

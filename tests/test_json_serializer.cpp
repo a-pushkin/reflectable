@@ -18,6 +18,12 @@ struct TwoMember : public Reflectable<TwoMember> {
   END_REFLECTABLE_MEMBERS()
 };
 
+struct StructWithArray : public Reflectable<StructWithArray> {
+  BEGIN_REFLECTABLE_MEMBERS()
+  REFLECTABLE_MEMBER((std::vector<TwoMember>), arr)
+  END_REFLECTABLE_MEMBERS()
+};
+
 TEST(JsonSerializer, load_from_empty) {
   TwoMember config;
   json empty = json::object();
@@ -57,6 +63,17 @@ TEST(JsonSerializer, load_nested) {
 
   EXPECT_EQ(config.nested.foo, test_foo);
   EXPECT_EQ(config.nested.bar, TwoMember::default_bar);
+}
+
+TEST(JsonSerializer, load_array) {
+  StructWithArray config;
+  json partial = json::parse("{\"arr\":[{\"foo\":11},{\"foo\":22}]}");
+
+  ASSERT_TRUE(JsonSerializer::load(partial, config));
+
+  EXPECT_EQ(config.arr.size(), 2U);
+  EXPECT_EQ(config.arr[0].foo, 11);
+  EXPECT_EQ(config.arr[1].foo, 22);
 }
 
 }  // namespace
