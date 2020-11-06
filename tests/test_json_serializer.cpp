@@ -10,8 +10,8 @@ namespace {
 
 struct TestStruct : public Reflectable<TestStruct> {
   BEGIN_REFLECTABLE_MEMBERS()
-  REFLECTABLE_MEMBER(int, foo, default_foo)
-  REFLECTABLE_MEMBER(float, bar, default_bar)
+  REFLECTABLE_MEMBER(int, foo)
+  REFLECTABLE_MEMBER(float, bar)
   REFLECTABLE_MEMBER((std::map<int, float>), baz)
   END_REFLECTABLE_MEMBERS()
 };
