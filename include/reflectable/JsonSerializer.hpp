@@ -115,7 +115,8 @@ class JsonSerializer {
    */
   template <typename T, typename TBase>
   static bool save_impl(json& j, const Reflectable<T, TBase>& member) {
-    return save(member, j);
+    save(member, j);
+    return true;
   }
 
   /**

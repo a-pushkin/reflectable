@@ -8,6 +8,14 @@ using namespace nlohmann;
 
 namespace {
 
+struct TestStruct : public Reflectable<TestStruct> {
+  BEGIN_REFLECTABLE_MEMBERS()
+  REFLECTABLE_MEMBER(int, foo, default_foo)
+  REFLECTABLE_MEMBER(float, bar, default_bar)
+  REFLECTABLE_MEMBER((std::map<int, float>), baz)
+  END_REFLECTABLE_MEMBERS()
+};
+
 struct TwoMember : public Reflectable<TwoMember> {
   static constexpr int default_foo = 42;
   static constexpr float default_bar = 1.1;
@@ -15,6 +23,7 @@ struct TwoMember : public Reflectable<TwoMember> {
   BEGIN_REFLECTABLE_MEMBERS()
   REFLECTABLE_MEMBER(int, foo, default_foo)
   REFLECTABLE_MEMBER(float, bar, default_bar)
+  REFLECTABLE_MEMBER(std::vector<TestStruct>, ss)
   REFLECTABLE_MEMBER((std::map<int, float>), baz)
   END_REFLECTABLE_MEMBERS()
 };
