@@ -204,6 +204,16 @@ struct Reflectable : TBase {
         0);
   }
 
+  template <typename TOperation>
+  constexpr int for_each_member_value(TOperation&& value_op) const {
+    return TSelf::_reflectable_for_each_impl(
+        [=](size_t ordinal, const char* name, auto m, const auto& attrs) {
+          return value_op(ordinal, name, m(static_cast<const TSelf&>(*this)),
+                          attrs);
+        },
+        0);
+  }
+
   /**
    * @brief Returns reference to *this cast to the child class type
    *

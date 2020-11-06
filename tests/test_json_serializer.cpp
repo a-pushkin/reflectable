@@ -77,6 +77,21 @@ TEST(JsonSerializer, load_array) {
   EXPECT_EQ(config.arr[1].foo, 22);
 }
 
+TEST(JsonSerializer, save_load) {
+  TwoMember config;
+  config.foo = 11;
+  config.bar = 12.0;
+
+  json j;
+  JsonSerializer::save(config, j);
+
+  TwoMember config2;
+  ASSERT_TRUE(JsonSerializer::load(j, config2));
+
+  EXPECT_EQ(config2.foo, config.foo);
+  EXPECT_EQ(config2.bar, config.bar);
+}
+
 class Config final : public ReflectLib::Reflectable<Config> {
  public:
   class TelemetryClass final : public ReflectLib::Reflectable<TelemetryClass> {
@@ -87,7 +102,7 @@ class Config final : public ReflectLib::Reflectable<Config> {
     REFLECTABLE_MEMBER(std::string, table_name)
     REFLECTABLE_MEMBER(std::string, value_name)
     REFLECTABLE_MEMBER(size_t, value_selector)
-    REFLECTABLE_MEMBER((std::vector<std::pair<std::string, std::string>>), tags)
+    REFLECTABLE_MEMBER((std::unordered_map<std::string, std::string>), tags)
     REFLECTABLE_MEMBER(bool, ignore, false)
     END_REFLECTABLE_MEMBERS()
   };

@@ -476,57 +476,6 @@ class JsonSerializer {
     return true;
   }
 
- public:
-  /**
-   * @brief Saves member into corresponding key of @see value
-   *
-   * @tparam  TMember         Member type
-   * @tparam  TAttributes     Attribute members
-   *
-   * @param   name            Member name
-   * @param   member          Reference to member
-   *
-   * @return  Success or false
-   */
-  template <typename TMember, typename... TAttributes>
-  bool save_member(size_t,
-                   const char* name,
-                   const TMember& member,
-                   const std::tuple<TAttributes...>&) {
-    return save_impl(value_[name], member);
-  }
-
-  /**
-   * @brief Loads member from corresponding key of @see value
-   *
-   * @tparam  TMember         Member type
-   * @tparam  TAttributes     Attribute members
-   *
-   * @param   name            Member name
-   * @param   member          Reference to member
-   * @param   attrs           Member attributes
-   *
-   * @return  Success or false
-   */
-  template <typename TMember, typename TAttributes>
-  bool load_member(size_t,
-                   const char* name,
-                   TMember& member,
-                   TAttributes) const {
-    constexpr bool is_required =
-        tuple_has_type<ReflectableBase::Attr_RequiredMember,
-                       TAttributes>::value;
-
-    const auto it = value_.find(name);
-    if (it == value_.end()) {
-      return !is_required;
-    } else {
-      return load_impl(*it, member);
-    }
-  }
-
-  json value_;
-
  private:
   template <typename T>
   using handler_t = Impl::member_handler_t<T, const json&>;
@@ -584,6 +533,18 @@ class JsonSerializer {
     Impl::required_members_t<T> required{};
 
     return load_json_impl(source, required, reflectable);
+  }
+
+  template <typename T>
+  static void save(const Reflectable<T>& source, json& dest) {
+    source.for_each_member_value([&](size_t ordinal, const char* name, auto m,
+                                     const auto& attrs) -> bool {
+      json j;
+      save_impl(j, m);
+      dest[name] = j;
+
+      return true;
+    });
   }
 };
 
